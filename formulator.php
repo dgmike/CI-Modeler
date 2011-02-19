@@ -79,6 +79,14 @@ class Formulator
                       . '</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, PHP_EOL );
     }
 
+    private function _createTextareaElement( $key, $field, $value )
+    {
+        return sprintf( '<label class="form_text %s%s">' . PHP_EOL
+                      . '%s'
+                      . '  <textarea name="%s">%s</textarea>' . PHP_EOL
+                      . '</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, PHP_EOL );
+    }
+
     private function _createHiddenElement( $key, $field, $value )
     {
         return sprintf( '<input type="hidden" name="%s" value="%s" />%s', $key, $value, PHP_EOL.PHP_EOL );
