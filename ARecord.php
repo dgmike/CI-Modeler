@@ -25,7 +25,7 @@ class ARecord extends Model
         if (!$this->autofields && $this->primary) {
             throw new ARecord_No_Primary;
         }
-        if (!$this->fields) {
+        if ($this->autofields) {
             $this->_auto_set_fields();
         }
         if (!$this->primary) {
@@ -62,11 +62,11 @@ class ARecord extends Model
             if ($col->Key) {
                 $type = 'hidden';
             }
-            $this->fields[$col->Field] = array(
-                    'label' => $col->Field,
+            $this->fields[$col->Field] = array_merge(array(
+                    'label' => str_replace('_', ' ', $col->Field),
                     'type' => $type,
                     'rules' => '',
-                    );
+                    ), ( empty( $this->fields[$col->Field] ) ? array(  ) : $this->fields[$col->Field] ));
             if ($values !== null) {
                 $this->fields[$col->Field]['values'] = $values;
             }
@@ -84,6 +84,21 @@ class ARecord extends Model
         }
         $this->keys = array_unique($this->keys);
         $this->primary = array_unique($this->primary);
+    }
+
+    public final function form()
+    {
+        $values   = array();
+        $elements = func_get_args();
+        if (func_num_args() && 'array' === gettype($elements[0])) {
+            $values = array_shift($elements);
+        }
+        if (!$elements) {
+            $elements = array_keys($this->fields);
+        }
+        $form = new Formulator($this->fields, $values);
+        $form->setElements($elements);
+        return $form;
     }
 }
 
