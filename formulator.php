@@ -19,7 +19,21 @@ class Formulator
     public function setElements(array $elements = array())
     {
         $this->elements = $this->_validateElements($elements);
-        $this->_parseElements($this->elements);
+        $this->form = $this->_parseElements($this->elements);
+    }
+
+    public function show( $print = false )
+    {
+        if ( $print ) {
+            echo $this->form;
+            return;
+        }
+        return $this->form;
+    }
+
+    public function __toString()
+    {
+        return $this->form;
     }
 
     private function _validateElements(array $elements = array())
@@ -57,8 +71,7 @@ class Formulator
                 }
             }
         }
-        print $form;
-        print '<pre class="debug" style="text-align:left;background:#FFFFFF;color:#333333;padding:5px;">'.print_r(htmlentities($form), true)."</pre>";
+        return $form;
     }
 
     private function _formatClass($field)
