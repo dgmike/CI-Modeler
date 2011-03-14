@@ -2,8 +2,8 @@
 
 class Formulator
 {
-	private $_reference = null;
-	public  $fields     = array();
+    private $_reference = null;
+    public  $fields     = array();
     public  $values     = array();
     public  $elements   = array();
 
