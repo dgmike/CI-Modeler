@@ -11,6 +11,7 @@ class ARecord extends Model
 	public $fields     = array();
     public $primary    = null;
     public $keys       = null;
+    public $forms      = array();
 
     public function __construct()
     {
