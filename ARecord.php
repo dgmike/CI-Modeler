@@ -1,6 +1,6 @@
 <?php
 
-class ARecord extends Model
+class ARecord
 {
 	public $db         = null;
 
@@ -15,6 +15,7 @@ class ARecord extends Model
 
     public function __construct()
     {
+        log_message('debug', "Model Class Initialized");
         $this->db   =& get_instance()->db;
         $class_name = strtolower(get_class($this));
         if (!$this->table) {
