@@ -1,6 +1,6 @@
 <?php
 
-class ARecord
+class Modeler_ARecord
 {
 	public $db         = null;
 
@@ -33,6 +33,18 @@ class ARecord
         if (!$this->primary) {
             $this->_auto_set_keys();
         }
+    }
+
+    public function get($keys)
+    {
+        if (count($this->primary) > 1) {
+            // @TODO colocar o get em formato de array
+            return '@TODO';
+        }
+        return new Modeler_Result($this, $this->db
+             ->from($this->table)
+             ->where(array($this->primary[0] => $keys))
+             ->get() );
     }
 
     private final function _auto_set_fields()
