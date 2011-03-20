@@ -20,6 +20,7 @@ class Modeler_ARecord
         $class_name = strtolower(get_class($this));
         if (!$this->table) {
             $this->table = preg_replace('@^model_|_model$@', '', $class_name);
+            log_message('debug', 'Modeler_ARecord: discovering table name: ' . $this->table);
         }
         if (!$this->autofields && !$this->fields) {
             throw new ARecord_Empty_Fields;
@@ -28,9 +29,11 @@ class Modeler_ARecord
             throw new ARecord_No_Primary;
         }
         if ($this->autofields) {
+            log_message('debug', 'Modeler_ARecord: setting fields automaticaly');
             $this->_auto_set_fields();
         }
         if (!$this->primary) {
+            log_message('debug', 'Modeler_ARecord: setting keys automaticaly');
             $this->_auto_set_keys();
         }
     }
