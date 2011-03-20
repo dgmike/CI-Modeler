@@ -25,7 +25,7 @@ class Modeler_ARecord
         if (!$this->autofields && !$this->fields) {
             throw new ARecord_Empty_Fields;
         }
-        if (!$this->autofields && $this->primary) {
+        if (!$this->autofields && !$this->primary) {
             throw new ARecord_No_Primary;
         }
         if ($this->autofields) {
