@@ -1,6 +1,6 @@
 <?php
 
-class Formulator
+class Modeler_Formulator
 {
 	private $_reference = null;
 	public  $fields     = array();

@@ -110,7 +110,7 @@ class Modeler_ARecord
         if (!$elements) {
             $elements = array_keys($this->fields);
         }
-        $form = new Formulator($this->fields, $values);
+        $form = new Modeler_Formulator($this->fields, $values);
         $form->setElements($elements);
         return $form;
     }

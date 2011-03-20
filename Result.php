@@ -19,7 +19,7 @@ class Modeler_Result
         if (!$elements) {
             $elements = array_keys($this->model->fields);
         }
-        $form = new Formulator($this->model->fields, $this->current);
+        $form = new Modeler_Formulator($this->model->fields, $this->current);
         $form->setElements($elements);
         return $form;
     }
