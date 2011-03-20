@@ -117,4 +117,28 @@ class Modeler_ARecord
         $form->setElements($elements);
         return $form;
     }
+
+    public function export_fields($preppend = '', $data = null)
+    {
+        if (!func_num_args()) {
+            print '<pre class="debug" style="text-align:left;background:#FFFFFF;color:#333333;padding:5px;">' . PHP_EOL;
+            $fields = $this->fields;
+        } else {
+            $fields = $data;
+        }
+        print 'array(' . PHP_EOL;
+        foreach ($fields as $k=>$v) {
+            if ('array' === gettype($v)) {
+                print $preppend . '    \'' . $k . '\' => ';
+                $this->export_fields($preppend . '    ', $v);
+            } else {
+                print $preppend . '    \'' . $k . '\' => \'' . addslashes($v) . '\',' . PHP_EOL;
+            }
+        }
+        print $preppend . ')' . (!$preppend ? ';' : ',') . PHP_EOL;
+        if (!func_num_args()) {
+            print '</pre>';
+        }
+    }
+
 }
