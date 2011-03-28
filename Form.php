@@ -8,4 +8,9 @@ class Modeler_Form
     {
         $this->form_pattern = $form_pattern;
     }
+
+    public function getFormPattern()
+    {
+        return $this->form_pattern;
+    }
 }
