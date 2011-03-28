@@ -2,6 +2,9 @@
 
 class Modeler_ARecord
 {
+	/* Used in old CodeIgniter */
+	private $_parent_name = '';
+
 	public $db         = null;
 
 	public $table      = null;
@@ -12,6 +15,39 @@ class Modeler_ARecord
     public $primary    = null;
     public $keys       = null;
     public $forms      = array();
+
+	/**
+	 * Assign Libraries
+	 *
+	 * Used in old CodeIgniter
+	 *
+	 * Creates local references to all currently instantiated objects
+	 * so that any syntax that can be legally used in a controller
+	 * can be used within models.  
+	 *
+	 * @access private
+	 */	
+	function _assign_libraries($use_reference = TRUE)
+	{
+		$CI =& get_instance();				
+		foreach (array_keys(get_object_vars($CI)) as $key)
+		{
+			if ( ! isset($this->$key) AND $key != $this->_parent_name)
+			{			
+				// In some cases using references can cause
+				// problems so we'll conditionally use them
+				if ($use_reference == TRUE)
+				{
+					$this->$key = NULL; // Needed to prevent reference errors with some configurations
+					$this->$key =& $CI->$key;
+				}
+				else
+				{
+					$this->$key = $CI->$key;
+				}
+			}
+		}		
+	}
 
     public function __construct()
     {
