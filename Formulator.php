@@ -83,6 +83,8 @@ class Modeler_Formulator
             }
             if ( in_array($item, $valid) ) {
                 $_elements[] = $item;
+            } elseif ($item instanceof Modeler_Form) {
+                $_elements[] = $item;
             } else {
                 $ref = $this->_reference ? ": {$this->_reference}" : '.';
                 if (is_scalar($item)) {
