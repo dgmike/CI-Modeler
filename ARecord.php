@@ -1,6 +1,6 @@
 <?php
 
-class ARecord extends Model
+class Modeler_ARecord
 {
 	public $db         = null;
 
@@ -15,23 +15,39 @@ class ARecord extends Model
 
     public function __construct()
     {
+        log_message('debug', "Model Class Initialized");
         $this->db   =& get_instance()->db;
         $class_name = strtolower(get_class($this));
         if (!$this->table) {
             $this->table = preg_replace('@^model_|_model$@', '', $class_name);
+            log_message('debug', 'Modeler_ARecord: discovering table name: ' . $this->table);
         }
         if (!$this->autofields && !$this->fields) {
             throw new ARecord_Empty_Fields;
         }
-        if (!$this->autofields && $this->primary) {
+        if (!$this->autofields && !$this->primary) {
             throw new ARecord_No_Primary;
         }
         if ($this->autofields) {
+            log_message('debug', 'Modeler_ARecord: setting fields automaticaly');
             $this->_auto_set_fields();
         }
         if (!$this->primary) {
+            log_message('debug', 'Modeler_ARecord: setting keys automaticaly');
             $this->_auto_set_keys();
         }
+    }
+
+    public function get($keys)
+    {
+        if (count($this->primary) > 1) {
+            // @TODO colocar o get em formato de array
+            return '@TODO';
+        }
+        return new Modeler_Result($this, $this->db
+             ->from($this->table)
+             ->where(array($this->primary[0] => $keys))
+             ->get() );
     }
 
     private final function _auto_set_fields()
@@ -97,30 +113,32 @@ class ARecord extends Model
         if (!$elements) {
             $elements = array_keys($this->fields);
         }
-        $form = new Formulator($this->fields, $values);
+        $form = new Modeler_Formulator($this->fields, $values);
         $form->setElements($elements);
         return $form;
     }
-}
 
-class ARecord_Empty_Fields extends Exception
-{
-    public function __construct($message = NULL, $code = 1)
+    public function export_fields($preppend = '', $data = null)
     {
-        if (empty($message)) {
-            $message = 'You need to especify the \'$fields\' OR define \'$autofields\' = true propriety of object.';
+        if (!func_num_args()) {
+            print '<pre class="debug" style="text-align:left;background:#FFFFFF;color:#333333;padding:5px;">' . PHP_EOL;
+            $fields = $this->fields;
+        } else {
+            $fields = $data;
         }
-        parent::__construct($message, $code);
+        print 'array(' . PHP_EOL;
+        foreach ($fields as $k=>$v) {
+            if ('array' === gettype($v)) {
+                print $preppend . '    \'' . $k . '\' => ';
+                $this->export_fields($preppend . '    ', $v);
+            } else {
+                print $preppend . '    \'' . $k . '\' => \'' . addslashes($v) . '\',' . PHP_EOL;
+            }
+        }
+        print $preppend . ')' . (!$preppend ? ';' : ',') . PHP_EOL;
+        if (!func_num_args()) {
+            print '</pre>';
+        }
     }
-}
 
-class ARecord_No_Primary extends Exception
-{
-    public function __construct($message = NULL, $code = 1)
-    {
-        if (empty($message)) {
-            $message = 'You need to especify the \'$primary\' OR define \'$autofields\' = true propriety of object.';
-        }
-        parent::__construct($message, $code);
-    }
 }
