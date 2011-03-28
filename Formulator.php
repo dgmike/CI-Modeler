@@ -19,7 +19,7 @@ class Modeler_Formulator
     public function setElements(array $elements = array())
     {
         $this->elements = $this->_validateElements($elements);
-        $this->form = $this->_parseElements($this->elements);
+        $this->form     = $this->_parseElements($this->elements);
     }
 
     public function show( $print = false )
@@ -45,13 +45,16 @@ class Modeler_Formulator
                 $_elements[] = $this->_validateElements($item);
                 continue;
             }
-            if ( 'legend' === $k ) {
-                $_elements['title'] = $item;
-            } elseif ( in_array($item, $valid) ) {
+            if ( in_array($item, $valid) ) {
                 $_elements[] = $item;
             } else {
                 $ref = $this->_reference ? ": {$this->_reference}" : '.';
-                trigger_error('Element \''.$item.'\' is not a valid element for this form'.$ref, E_USER_NOTICE);
+                if (is_scalar($item)) {
+                    $item_str = $item;
+                } else {
+                    $item_str = get_class($item);
+                }
+                trigger_error('Element \''.$item_str.'\' is not a valid element for this form'.$ref, E_USER_NOTICE);
             }
         }
         return $_elements;

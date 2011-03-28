@@ -1,5 +1,14 @@
 <?php
-
+/**
+ * Modeler Active Record
+ * 
+ * Esta classe serve para ser extendida pelo seu Model e assim ganhar vários
+ * recursos para facilitar a vida do programador. Um bom exemplo é poder
+ * usar um método para gerar formulários automáticamente, sem precisar escrever
+ * uma únia linha de HTML.
+ * 
+ * @package Library
+ */
 class Modeler_ARecord
 {
 	/* Used in old CodeIgniter */
@@ -52,10 +61,10 @@ class Modeler_ARecord
     /**
      * __construct 
      * 
-     *
+     * Inicializa a classe, invista nas variáveis públicas deste objeto para
+     * manipular o seu __construct
      *
      * @access public
-     * @return void
      */
     public function __construct()
     {
@@ -82,18 +91,15 @@ class Modeler_ARecord
         }
     }
 
-    public function get($keys)
-    {
-        if (count($this->primary) > 1) {
-            // @TODO colocar o get em formato de array
-            return '@TODO';
-        }
-        return new Modeler_Result($this, $this->db
-             ->from($this->table)
-             ->where(array($this->primary[0] => $keys))
-             ->get() );
-    }
-
+    /**
+     * Auto Set Fields
+     * 
+     * Quando você não seta os campos na model este método é chamado para setar
+     * os campos com base nos dados encontrados no DESCRIBE do banco de dados.
+     * Atenção: Valido apenas para bancos MySQL
+     * 
+     * @access private
+     */
     private final function _auto_set_fields()
     {
         $cols = $this->db->query('DESCRIBE '.$this->table);
@@ -103,7 +109,8 @@ class Modeler_ARecord
             if (preg_match('@^int|^float@', strtolower($col->Type))) {
                 $type = 'number';
             }
-            if (preg_match('@^enum\s*\((.*)\s*\)$@', strtolower($col->Type), $matches)) {
+            $regexp = '@^enum\s*\((.*)\s*\)$@';
+            if (preg_match($regexp, strtolower($col->Type), $matches)) {
                 $extract_args = create_function('', 'return func_get_args();');
                 $vals = eval('return $extract_args('.$matches[1].');');
                 $type = 'select';
@@ -123,17 +130,30 @@ class Modeler_ARecord
             if ($col->Key) {
                 $type = 'hidden';
             }
+            $default_fields = ( empty( $this->fields[$col->Field] ) ? 
+                                array(  ) : $this->fields[$col->Field] );
             $this->fields[$col->Field] = array_merge(array(
                     'label' => str_replace('_', ' ', $col->Field),
                     'type' => $type,
                     'rules' => '',
-                    ), ( empty( $this->fields[$col->Field] ) ? array(  ) : $this->fields[$col->Field] ));
+                    ), $default_fields);
             if ($values !== null) {
                 $this->fields[$col->Field]['values'] = $values;
             }
         }
     }
 
+    /**
+     * Auto Set Keys
+     * 
+     * Caso você não sete os valores para $keys na sua model este método é
+     * executado automáticamente para setar os dados com base no SHOW INDEX
+     * do banco de dados.
+     * Este método é valido apenas para MySQL.
+     * 
+     * @access private
+     * @return void
+     */
     private final function _auto_set_keys()
     {
         $result = $this->db->query('SHOW INDEX IN '.$this->table);
@@ -147,6 +167,31 @@ class Modeler_ARecord
         $this->primary = array_unique($this->primary);
     }
 
+    /**
+     * Retorna um resultado com base em suas chaves
+     * 
+     * @param array $keys Valor(es) que você pretende usar como where
+     * @return Modeler_Result
+     */
+    public function get($keys)
+    {
+        if (count($this->primary) > 1) {
+            // @TODO colocar o get em formato de array
+            return '@TODO';
+        }
+        return new Modeler_Result($this, $this->db
+             ->from($this->table)
+             ->where(array($this->primary[0] => $keys))
+             ->get() );
+    }
+
+    /**
+     * Gera um formulário para poder usar como achar mais conveniente
+     * 
+     * @param array optional Passe um array associativo com os values dos campos
+     * @param string optional Passe os campos. Uma string para cada campo
+     * @return Modeler_Formulator
+     */
     public final function form()
     {
         $values   = array();
@@ -162,10 +207,18 @@ class Modeler_ARecord
         return $form;
     }
 
+    /**
+     * Export Fields
+     * 
+     * Ajuda a gerar os campos para sua model. Este método deve ser chamado
+     * sem nenhum parametro, apesar de ele usar dois parametros, usados por
+     * ele mesmo para fazer os loops
+     */
     public function export_fields($preppend = '', $data = null)
     {
         if (!func_num_args()) {
-            print '<pre class="debug" style="text-align:left;background:#FFFFFF;color:#333333;padding:5px;">' . PHP_EOL;
+            print   '<pre class="debug" style="text-align:left;'
+                  . 'background:#FFFFFF;color:#333333;padding:5px;">' . PHP_EOL;
             $fields = $this->fields;
         } else {
             $fields = $data;
@@ -176,7 +229,8 @@ class Modeler_ARecord
                 print $preppend . '    \'' . $k . '\' => ';
                 $this->export_fields($preppend . '    ', $v);
             } else {
-                print $preppend . '    \'' . $k . '\' => \'' . addslashes($v) . '\',' . PHP_EOL;
+                print   $preppend . '    \'' . $k . '\' => \'' . addslashes($v)
+                      . '\',' . PHP_EOL;
             }
         }
         print $preppend . ')' . (!$preppend ? ';' : ',') . PHP_EOL;
@@ -184,5 +238,4 @@ class Modeler_ARecord
             print '</pre>';
         }
     }
-
 }
