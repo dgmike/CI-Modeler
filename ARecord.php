@@ -49,6 +49,14 @@ class Modeler_ARecord
 		}		
 	}
 
+    /**
+     * __construct 
+     * 
+     *
+     *
+     * @access public
+     * @return void
+     */
     public function __construct()
     {
         log_message('debug', "Model Class Initialized");
