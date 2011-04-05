@@ -109,14 +109,20 @@ class Modeler_Formulator
     {
         $valid = array_keys($this->fields);
         $form  = PHP_EOL;
-        foreach ($elements as $k=>$item) {
-            if ( in_array($item, $valid )) {
+        foreach ($elements as $item) {
+            if (in_array($item, $valid )) {
                 $type = empty($this->fields[$item]['type']) ? 'text' : $this->fields[$item]['type'];
                 $method = '_create'.ucfirst(strtolower( $type )).'Element';
                 if ( is_callable(array( $this, $method ) ) ) {
                     $value = empty( $this->values[$item] ) ? '' : $this->values[$item];
                     $form .= $this->$method( $item, $this->fields[$item], $value );
                 }
+            } elseif ($item instanceof Modeler_Form) {
+                /*
+                if (!in_array($item->getFormPattern(), $this->_reference->forms)) {
+                    trigger_error('Element \''.$$item->getFormPattern().'\' is not a valid element for this form'.$ref, E_USER_NOTICE);
+                }
+                */
             }
         }
         return $form;
