@@ -16,12 +16,12 @@ class Modeler_Formulator
      * @access public
      * @return void
      */
-    public function __construct(array $fields, $values, $reference = null)
+    public function __construct($values, $reference = null)
     {
         if ($reference) {
             $this->_reference = $reference;
+            $this->fields = $reference->fields;
         }
-        $this->fields = $fields;
         $this->values = $values;
     }
 
@@ -62,7 +62,7 @@ class Modeler_Formulator
      */
     public function __toString()
     {
-        return $this->form;
+        return empty($this->form) ? '' : $this->form;
     }
 
     /**
@@ -86,7 +86,7 @@ class Modeler_Formulator
             } elseif ($item instanceof Modeler_Form) {
                 $_elements[] = $item;
             } else {
-                $ref = $this->_reference ? ": {$this->_reference}" : '.';
+                $ref = $this->_reference ? ': ' . get_class($this->_reference) : '.';
                 if (is_scalar($item)) {
                     $item_str = $item;
                 } else {
@@ -96,6 +96,11 @@ class Modeler_Formulator
             }
         }
         return $_elements;
+    }
+
+    public function parseElements(array $elements = array())
+    {
+        return $this->_parseElements($elements);
     }
 
     /**
@@ -110,22 +115,33 @@ class Modeler_Formulator
         $valid = array_keys($this->fields);
         $form  = PHP_EOL;
         foreach ($elements as $item) {
-            if (in_array($item, $valid )) {
+            if (is_string($item) && in_array($item, $valid )) {
                 $type = empty($this->fields[$item]['type']) ? 'text' : $this->fields[$item]['type'];
                 $method = '_create'.ucfirst(strtolower( $type )).'Element';
                 if ( is_callable(array( $this, $method ) ) ) {
                     $value = empty( $this->values[$item] ) ? '' : $this->values[$item];
                     $form .= $this->$method( $item, $this->fields[$item], $value );
                 }
-            } elseif ($item instanceof Modeler_Form) {
-                /*
-                if (!in_array($item->getFormPattern(), $this->_reference->forms)) {
-                    trigger_error('Element \''.$$item->getFormPattern().'\' is not a valid element for this form'.$ref, E_USER_NOTICE);
+            } elseif (is_object($item) && $item instanceof Modeler_Form) {
+                if (!in_array($item->getFormPattern(), array_keys($this->_reference->forms))) {
+                    trigger_error('Element \''.$item->getFormPattern().'\' is not a valid element for this form', E_USER_NOTICE);
+                } else {
+                    $form .= $this->_parseModelerForm($item);
                 }
-                */
+            } elseif (is_object($item) && $item instanceof Modeler_Element) {
+               $form .= $item->render($this, $this->values);
+            } else {
+                trigger_error('Element \''.(is_string($item) ? $item : get_class($item) . ' (object)').'\' is not a valid element for this form', E_USER_NOTICE);
             }
         }
         return $form;
+    }
+
+    private function _parseModelerForm(Modeler_Form $modeler_form)
+    {
+        $valid    = array_keys($this->fields);
+        $elements = $this->_reference->forms[$modeler_form->getFormPattern()];
+        return $this->_parseElements($elements);
     }
 
     /**

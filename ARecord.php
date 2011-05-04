@@ -89,6 +89,12 @@ class Modeler_ARecord
             log_message('debug', 'Modeler_ARecord: setting keys automaticaly');
             $this->_auto_set_keys();
         }
+        $this->forms = $this->setForms();
+    }
+
+    public function setForms()
+    {
+        return array('default' => array_keys($this->fields));
     }
 
     /**
@@ -202,7 +208,7 @@ class Modeler_ARecord
         if (!$elements) {
             $elements = array_keys($this->fields);
         }
-        $form = new Modeler_Formulator($this->fields, $values);
+        $form = new Modeler_Formulator($values, $this);
         $form->setElements($elements);
         return $form;
     }
