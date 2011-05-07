@@ -169,6 +169,18 @@ class Modeler_Formulator
     }
 
     /**
+     * _formatSmall 
+     * 
+     * @param mixed $field 
+     * @access private
+     * @return void
+     */
+    private function _formatSmall($field)
+    {
+        return empty( $field['small'] ) ? '' : ('  <small>'.$field['small'].'</small>' . PHP_EOL);
+    }
+
+    /**
      * _createTextElement 
      * 
      * @param mixed $key 
@@ -182,7 +194,7 @@ class Modeler_Formulator
         return sprintf( '<label class="form_text %s%s">' . PHP_EOL
                       . '%s'
                       . '  <input type="text" name="%s" value="%s" />' . PHP_EOL
-                      . '</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, PHP_EOL );
+                      . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
     }
 
     /**
@@ -199,7 +211,7 @@ class Modeler_Formulator
         return sprintf( '<label class="form_text %s%s">' . PHP_EOL
                       . '%s'
                       . '  <textarea name="%s">%s</textarea>' . PHP_EOL
-                      . '</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, PHP_EOL );
+                      . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
     }
 
     /**

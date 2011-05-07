@@ -9,7 +9,7 @@ class Modeler_Element_Fieldset implements Modeler_Element
         $this->config   = $config;
     }
 
-    public function render($formulator, $values)
+    public function render( Modeler_Formulator $formulator, array $values)
     {
         $this->formulator = $formulator;
         $fieldset = '<fieldset class="fieldset%s"%s><legend>%s</legend>%s</fieldset>';
