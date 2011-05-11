@@ -262,6 +262,6 @@ class Modeler_Formulator
                       . '%s'
                       . '  <select name="%s">%s' . PHP_EOL
                       . '  </select>' . PHP_EOL
-                      . '</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $options, PHP_EOL );
+                      . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $options, $this->_formatSmall($field), PHP_EOL );
     }
 }

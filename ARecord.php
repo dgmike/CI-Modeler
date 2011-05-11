@@ -14,6 +14,7 @@ class Modeler_ARecord
 	/* Used in old CodeIgniter */
 	private $_parent_name = '';
 
+	public $ci         = null;
 	public $db         = null;
 
 	public $table      = null;
@@ -69,7 +70,8 @@ class Modeler_ARecord
     public function __construct()
     {
         log_message('debug', "Model Class Initialized");
-        $this->db   =& get_instance()->db;
+        $this->ci   =& get_instance();
+        $this->db   =& $this->ci->db;
         $class_name = strtolower(get_class($this));
         if (!$this->table) {
             $this->table = preg_replace('@^model_|_model$@', '', $class_name);
@@ -140,6 +142,7 @@ class Modeler_ARecord
                                 array(  ) : $this->fields[$col->Field] );
             $this->fields[$col->Field] = array_merge(array(
                     'label' => str_replace('_', ' ', $col->Field),
+                    'small' => '',
                     'type' => $type,
                     'rules' => '',
                     ), $default_fields);
@@ -214,6 +217,38 @@ class Modeler_ARecord
     }
 
     /**
+     * Executa ou appenda a validação dos campos enviados para o sistema
+     *
+     * @param bool  $run    Executar o script de validação imediatamente?
+     * @param array $campos Um array dos campos que gostaria de validar
+     *
+     * @return bool
+     */
+    function validar($run=true, $campos = array()) {
+        $this->ci->load->library('form_validation');
+        $fields = $this->fields;
+        if (!$campos) {
+            $campos = array_keys($fields);
+        }
+        foreach ($fields as $key=>$field) {
+            if (in_array($key, $campos)) {
+                if (!empty($field['label'])) {
+                    $label = $field['label'];
+                } elseif (!empty($field['small'])) {
+                    $label = $field['small'];
+                } else {
+                    $label = $key;
+                }
+                $this->ci
+                    ->form_validation
+                    ->set_rules($key, $label, $field['rules']);
+            }
+        }
+        if (!$run) return true;
+        return $this->ci->form_validation->run();
+    }
+
+    /**
      * Export Fields
      * 
      * Ajuda a gerar os campos para sua model. Este método deve ser chamado
@@ -225,7 +260,7 @@ class Modeler_ARecord
         if (!func_num_args()) {
             print   '<pre class="debug" style="text-align:left;'
                   . 'background:#FFFFFF;color:#333333;padding:5px;">' . PHP_EOL;
-            $fields = $this->fields;
+            $fields = 'public $fields = ' . $this->fields;
         } else {
             $fields = $data;
         }
