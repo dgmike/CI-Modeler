@@ -260,7 +260,8 @@ class Modeler_ARecord
         if (!func_num_args()) {
             print   '<pre class="debug" style="text-align:left;'
                   . 'background:#FFFFFF;color:#333333;padding:5px;">' . PHP_EOL;
-            $fields = 'public $fields = ' . $this->fields;
+            print 'public $fields = ';
+            $fields = $this->fields;
         } else {
             $fields = $data;
         }
@@ -278,5 +279,22 @@ class Modeler_ARecord
         if (!func_num_args()) {
             print '</pre>';
         }
+    }
+
+    public function insert($data)
+    {
+        $this->db->trans_begin();
+        $this->db->insert($this->table, $data);
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return false;
+        }
+        if (is_scalar($this->primary) || (gettype($this->primary) == 'array' && count($this->primary)) ) {
+            $id = $this->db->insert_id();
+        } else {
+            $id = true;
+        }
+        $this->db->trans_commit();
+        return $id;
     }
 }
