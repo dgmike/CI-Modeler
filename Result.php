@@ -23,4 +23,23 @@ class Modeler_Result
         $form->setElements($elements);
         return $form;
     }
+
+    static function formatResult(array $result)
+    {
+        $return = array();
+        foreach ($result as $key => $value) {
+            if (strpos($key, '.') !== FALSE) {
+                $key = strtok($key, '.');
+                $rest = strtok(false);
+                if (empty($return[$key])) {
+                    $return[$key] = self::formatResult(array($rest => $value));
+                } else {
+                    $return[$key] = array_merge_recursive($return[$key], self::formatResult(array($rest => $value)));
+                }
+            } else {
+                $return[$key] = $value;
+            }
+        }
+        return $return;
+    }
 }
