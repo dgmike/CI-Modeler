@@ -281,6 +281,14 @@ class Modeler_ARecord
         }
     }
 
+    /**
+     * insert 
+     * 
+     * Insere um novo registro no banco de dados
+     * 
+     * @param array|object $data 
+     * @return int
+     */
     public function insert($data)
     {
         $this->db->trans_begin();
@@ -296,5 +304,30 @@ class Modeler_ARecord
         }
         $this->db->trans_commit();
         return $id;
+    }
+
+    /**
+     * update 
+     * 
+     * Atualiza dados no banco, você pode passar as chaves embutidas em data ou separadas
+     * na variável $where.
+     *
+     * @param array|object $newdata 
+     * @param array $where 
+     * @return boolean
+     */
+    public function update($newdata, array $where = array())
+    {
+        if (is_object($newdata)) {
+            settype($newdata, 'array');
+        }
+        foreach ($newdata as $key => $value) {
+            if (in_array($key, $this->primary)) {
+                $where[$key] = $value;
+                unset($newdata[$key]);
+            }
+        }
+        $this->db->where($where);
+        return $this->db->update($this->table, $newdata);
     }
 }
