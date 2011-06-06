@@ -232,7 +232,9 @@ class Modeler_ARecord
         }
         foreach ($fields as $key=>$field) {
             if (in_array($key, $campos)) {
-                if (!empty($field['label'])) {
+                if (!empty($field['vlabel'])) {
+                    $label = $field['vlabel'];
+                } elseif (!empty($field['label'])) {
                     $label = $field['label'];
                 } elseif (!empty($field['small'])) {
                     $label = $field['small'];
