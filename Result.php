@@ -37,7 +37,7 @@ class Modeler_Result implements Iterator, ArrayAccess
      */
     public function &rewind()
     {
-        $this->_valid = (reset($this->result) !== false); 
+        $this->_valid   = (reset($this->result) !== false); 
         $this->_current = current($this->result);
         return $this->current();
     }
@@ -99,7 +99,7 @@ class Modeler_Result implements Iterator, ArrayAccess
      */
     public function __get($key)
     {
-        $elm = $this->_current;
+        $elm &= $this->_current;
         if ('array' === gettype($elm)) {
             return (isset($elm[$key]) ? $elm[$key] : null);
         } elseif ('object' === gettype($elm)) {
@@ -185,7 +185,7 @@ class Modeler_Result implements Iterator, ArrayAccess
      */
     public function offsetGet($offset)
     {
-        $elm = $this->_current;
+        $elm &= $this->_current;
         if ('array' === gettype($elm)) {
             return (isset($elm[$offset]) ? $elm[$offset] : null);
         } elseif ('object' === gettype($elm)) {
