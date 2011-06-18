@@ -264,4 +264,32 @@ class Modeler_Formulator
                       . '  </select>' . PHP_EOL
                       . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $options, $this->_formatSmall($field), PHP_EOL );
     }
+
+    /**
+     * _createPasswordElement 
+     * 
+     * @param mixed $key 
+     * @param mixed $field 
+     * @param mixed $value 
+     * @access private
+     * @return void
+     */
+    private function _createPasswordElement( $key, $field, $value )
+    {
+        $render = sprintf( '<label class="form_password %s%s">' . PHP_EOL
+                . '%s'
+                . '  <input type="password" name="%s" value="%s" />' . PHP_EOL
+                . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
+        if (!empty($field['label2'])) {
+            $field['label'] = $field['label2'];
+            $field['small'] = empty($field['small2']) ? '' : $field['small2'];
+            $render .= sprintf( '<label class="form_password %s2%s">' . PHP_EOL
+                    . '%s'
+                    . '  <input type="password" name="%s2" value="%s" />' . PHP_EOL
+                    . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
+        }
+
+        return $render;
+    }
+
 }
