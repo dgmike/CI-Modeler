@@ -1,6 +1,6 @@
 <?php
 
-class Modeler_Result implements Iterator, ArrayAccess
+class Modeler_Result implements Iterator, ArrayAccess, Countable
 {
     private $_valid = null;
     private $_count = null;
@@ -52,7 +52,7 @@ class Modeler_Result implements Iterator, ArrayAccess
         if ($this->_current) {
             return $this;
         }
-        return null;
+        return $this->_current;
     }
     
     /**
@@ -195,12 +195,14 @@ class Modeler_Result implements Iterator, ArrayAccess
     }
     // Fim do ArrayAccess (voce pode acessar este objeto como um array)
 
-
-
-
     public function result_array()
     {
         return $this->result;
+    }
+
+    public function toArray()
+    {
+        return $this->_current;
     }
  
     public function form()

@@ -246,7 +246,9 @@ class Modeler_ARecord
                     ->set_rules($key, $label, $field['rules']);
             }
         }
-        if (!$run) return true;
+        if (!$run) {
+            return true;
+        }
         return $this->ci->form_validation->run();
     }
 
@@ -331,5 +333,27 @@ class Modeler_ARecord
         }
         $this->db->where($where);
         return $this->db->update($this->table, $newdata);
+    }
+
+    public function getPage($page = 1, array $filter = array(), $itens_per_page = 25, $select = null)
+    {
+        if (!$select) {
+            $select = array_keys($this->fields);
+        }
+        $this->db->select('SQL_CALC_FOUND_ROWS `' . array_shift($select) . '`')
+                 ->select($select, false)
+                 ->from($this->table);
+        if ($filter) {
+            $this->db->where($filter);
+        }
+        $page = (intVal($page) - 1);
+        if ($page < 0) {
+            $page = 0;
+        }
+        $limit = abs(intVal($itens_per_page));
+        $this->db->limit($itens_per_page, $page * $itens_per_page);
+        $result = new Modeler_Result($this, $this->db->get());
+        $total = $this->db->query('SELECT FOUND_ROWS() as count')->row()->count;
+        return array($result, $total);
     }
 }
