@@ -335,6 +335,17 @@ class Modeler_ARecord
         return $this->db->update($this->table, $newdata);
     }
 
+    public function delete($keys)
+    {
+        if (count($this->primary) > 1) {
+            // @TODO colocar o get em formato de array
+            return '@TODO';
+        }
+        $this->db
+             ->where(array($this->primary[0] => $keys))
+             ->delete($this->table);
+    }
+
     public function getPage($page = 1, array $filter = array(), $itens_per_page = 25, $select = null)
     {
         if (!$select) {
