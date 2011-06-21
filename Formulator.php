@@ -274,7 +274,7 @@ class Modeler_Formulator
     {
         $options = array(  );
         foreach ($field['values'] as $key => $val) {
-            $selected  = $val == $value ? ' selected="selected"' : '';
+            $selected  = $key == $value ? ' selected="selected"' : '';
             $options[] = sprintf( PHP_EOL . '    <option value="%s"%s>%s</option>', $key, $selected, $val );
         }
         return implode( '', $options );
