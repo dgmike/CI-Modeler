@@ -198,6 +198,40 @@ class Modeler_Formulator
     }
 
     /**
+     * _createNumberElement
+     * 
+     * @param mixed $key 
+     * @param mixed $field 
+     * @param mixed $value 
+     * @access private
+     * @return void
+     */
+    private function _createNumberElement( $key, $field, $value )
+    {
+        return sprintf( '<label class="form_number %s%s">' . PHP_EOL
+                      . '%s'
+                      . '  <input type="number" name="%s" value="%s" />' . PHP_EOL
+                      . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
+    }
+
+    /**
+     * _createEmailElement
+     * 
+     * @param mixed $key 
+     * @param mixed $field 
+     * @param mixed $value 
+     * @access private
+     * @return void
+     */
+    private function _createEmailElement( $key, $field, $value )
+    {
+        return sprintf( '<label class="form_email %s%s">' . PHP_EOL
+                      . '%s'
+                      . '  <input type="email" name="%s" value="%s" />' . PHP_EOL
+                      . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
+    }
+
+    /**
      * _createTextareaElement 
      * 
      * @param mixed $key 
