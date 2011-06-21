@@ -128,7 +128,7 @@ class Modeler_Crudder extends CI_Controller
             redirect($this->base_url.'/edit/'.$id, 303);
             die;
         }
-        $this->db->select('id, nome, login, email');
+        // $this->db->select('id, nome, login, email');
         $result = $this->cmodel->get($id);
         $types =array_keys($this->cmodel->forms); 
         if (in_array('edit', $types)) {
