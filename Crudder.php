@@ -138,9 +138,12 @@ class Modeler_Crudder extends CI_Controller
         } else {
             $form   = $result->form();
         }
+        if (method_exists($this, '_editActions')) {
+            $edit_actions = $this->_editActions($result);
+        }
         $title = $this->title . ': edit #' . $id;
         $message = $this->session->flashdata('message');
-        $data = compact('form', 'title', 'message');
+        $data = compact('form', 'title', 'message', 'edit_actions');
 
         $this->_render('edit', $data);
     }
