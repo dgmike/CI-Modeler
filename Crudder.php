@@ -2,13 +2,14 @@
 
 class Modeler_Crudder extends CI_Controller
 {
-    public $model  = null;
-    public $cmodel = null;
-    public $base_url = '/';
+    public $model        = null;
+    public $cmodel       = null;
+    public $base_url     = '/';
     public $table_config = array(
-        'row_start' => '<tr class="odd">',
+        'row_start'     => '<tr class="odd">',
         'row_alt_start' => '<tr class="even">',
     );
+    public $query = array();
 
     public function index($page = 1, $per_page = 10)
     {
@@ -18,17 +19,48 @@ class Modeler_Crudder extends CI_Controller
         if (method_exists($this, '_filter')) {
             $filter = $this->_filter();
         }
-        // @TODO fazer funcionar com multichaves
+        // @TODO fazer funcionar com multi-chaves
         $this->db->order_by($this->cmodel->primary[0], 'DESC');
+
+        // heading
+        $heading = array_keys($this->cmodel->fields);
+        if (method_exists($this, '_heading')) {
+            $heading = $this->_heading();
+        }
+        $this->table->set_heading($heading);
+
+        // @TODO pensar nos filtros
+        $heading_inputs = array();
+        if (method_exists($this, '_heading_inputs')) {
+            $heading = $this->_heading_inputs();
+        }
+        $this->cmodel->noLabels = true;
+        $has_filter = false;
+        foreach ($heading as $item) {
+            if (in_array(strtolower($item), array_keys($this->cmodel->fields))) {
+                $has_filter = true;
+                $val = $this->input->get($item);
+                $heading_inputs[] = array(
+                        'class' => 'center',
+                        'data'  => $this->cmodel->form(array($item => htmlspecialchars($val)), $item)
+                        );
+                if ($val) {
+                    $this->query[$item] = $val;
+                    $this->cmodel->db->like($item, $val);
+                }
+            } else {
+                $heading_inputs[] = array('data' => '' , 'class' => 'center');
+            }
+        }
+        if ($has_filter) {
+            $heading_inputs[count($heading_inputs) -1]['data'] .= '<button type="submit" class="left">Filter</button>';
+            $heading_inputs[count($heading_inputs) -1]['data'] .= '<button type="button" onclick="window.location=\''.$this->base_url.'\'" class="button right">clean</a>';
+            $this->table->add_row($heading_inputs);
+        }
+
         list($result, $total) = $this->cmodel->getPage($page, $filter, $per_page);
 
-        if ($total) {
-            // heading
-            $heading = array_keys($this->cmodel->fields);
-            if (method_exists($this, '_heading')) {
-                $heading = $this->_heading();
-            }
-            $this->table->set_heading($heading);
+        //if ($total) {
             // result
             foreach ($result as $item) {
                 $line = $result->toArray();
@@ -46,15 +78,16 @@ class Modeler_Crudder extends CI_Controller
             if (method_exists($this, '_pagination')) {
                 $paginate = $this->_pagination($total, $page, $per_page);
             }
-        } else {
-            $table = '';
-        }
+        //} else {
+        //    $table = '';
+        //}
         if (method_exists($this, '_actions')) {
             $actions = $this->_actions();
         }
         $title = $this->title;
         $message = $this->session->flashdata('message');
-        $data = compact('table', 'paginate', 'actions', 'title', 'message');
+        $base_url = $this->base_url;
+        $data = compact('table', 'paginate', 'actions', 'title', 'message', 'base_url');
         $this->_render('index', $data);
     }
 
@@ -82,9 +115,15 @@ class Modeler_Crudder extends CI_Controller
             $pagination[] = array($page+1, 'Next', $page >= $pages ? 'disabled' : false);
             $pagination[] = array($pages, 'Last', $page >= $pages ? 'disabled' : false);
         // }
+
+        $qs = http_build_query($this->query);
+        if ($qs) {
+            $qs = '?' . $qs;
+        }
+
         foreach ($pagination as $key => $value) {
             if (empty($value[2])) {
-                $pagination[$key] = sprintf('<a href="%s/index/%d/%d" title="">%s</a>', $this->base_url, $value[0], $per_page, $value[1]);
+                $pagination[$key] = sprintf('<a href="%s/index/%d/%d%s" title="">%s</a>', $this->base_url, $value[0], $per_page, $qs, $value[1]);
             // } elseif ($value[2] == 'actual') {
             //     $pagination[$key] = sprintf('<span class="actual">%s</span>', $value[1]);
             } else {

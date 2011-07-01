@@ -165,6 +165,9 @@ class Modeler_Formulator
      */
     private function _formatLabel($field)
     {
+        if (!empty($this->_reference->noLabels)) {
+            return '';
+        }
         return empty( $field['label'] ) ? '' : ('  <span>'.$field['label'].'</span>' . PHP_EOL);
     }
 
@@ -180,6 +183,14 @@ class Modeler_Formulator
         return empty( $field['small'] ) ? '' : ('  <small>'.$field['small'].'</small>' . PHP_EOL);
     }
 
+
+    private function _labeler($type, $key, $field, $inside)
+    {
+        $label = '<label class="form_%s %s%s">%s %s</label>';
+        $label = sprintf($label, $type, $key, $this->_formatClass($field), $this->_formatLabel($field), $inside);
+        return $label;
+    }
+
     /**
      * _createTextElement 
      * 
@@ -191,10 +202,9 @@ class Modeler_Formulator
      */
     private function _createTextElement( $key, $field, $value )
     {
-        return sprintf( '<label class="form_text %s%s">' . PHP_EOL
-                      . '%s'
-                      . '  <input type="text" name="%s" value="%s" />' . PHP_EOL
-                      . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
+        $text_element = sprintf('<input type="text" name="%s" value="%s" /> %s', $key, $value, $this->_formatSmall($field) );
+        $labeled = $this->_labeler('text', $key, $field, $text_element);
+        return $labeled;
     }
 
     /**
@@ -225,10 +235,9 @@ class Modeler_Formulator
      */
     private function _createEmailElement( $key, $field, $value )
     {
-        return sprintf( '<label class="form_email %s%s">' . PHP_EOL
-                      . '%s'
-                      . '  <input type="email" name="%s" value="%s" />' . PHP_EOL
-                      . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
+        $password_element = sprintf('<input type="email" name="%s" value="%s" /> %s', $key, $value, $this->_formatSmall($field) );
+        $labeled = $this->_labeler('email', $key, $field, $password_element);
+        return $labeled;
     }
 
     /**
@@ -310,6 +319,9 @@ class Modeler_Formulator
      */
     private function _createPasswordElement( $key, $field, $value )
     {
+        if (!empty($field['novalue'])) {
+            $value = '';
+        }
         $render = sprintf( '<label class="form_password %s%s">' . PHP_EOL
                 . '%s'
                 . '  <input type="password" name="%s" value="%s" />' . PHP_EOL
