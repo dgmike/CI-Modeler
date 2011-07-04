@@ -36,8 +36,9 @@ class Modeler_Crudder extends CI_Controller
         }
         $this->cmodel->noLabels = true;
         $has_filter = false;
+        $fields = array_keys($this->cmodel->fields);
         foreach ($heading as $item) {
-            if (in_array(strtolower($item), array_keys($this->cmodel->fields))) {
+            if (in_array(strtolower($item), $fields)) {
                 $has_filter = true;
                 $val = $this->input->get($item);
                 $heading_inputs[] = array(

@@ -279,12 +279,26 @@ class Modeler_Formulator
      * @access private
      * @return void
      */
-    private function _parseOptions($field, $value)
+    private function _parseOptions($field, $value, $fields = null)
     {
-        $options = array(  );
-        foreach ($field['values'] as $key => $val) {
-            $selected  = $key == $value ? ' selected="selected"' : '';
-            $options[] = sprintf( PHP_EOL . '    <option value="%s"%s>%s</option>', $key, $selected, $val );
+        if (!$fields) {
+            $fields = $field['values'];
+        }
+        $options = array();
+        foreach ($fields as $key => $val) {
+            if (gettype($val) == 'array') {
+                list($k) = array_keys($val);
+                $group_val = $val[$k];
+                unset($val[$k]);
+
+                $opts       = PHP_EOL.'   <optgroup label="'.$group_val.'">';
+                $opts      .= $this->_parseOptions($field, $value, $val);
+                $opts      .= PHP_EOL.'   </optgroup>';
+                $options[]  = $opts;
+            } else {
+                $selected  = $key == $value ? ' selected="selected"' : '';
+                $options[] = sprintf( PHP_EOL . '    <option value="%s"%s>%s</option>', $key, $selected, $val );
+            }
         }
         return implode( '', $options );
     }
