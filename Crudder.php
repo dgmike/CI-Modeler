@@ -26,6 +26,8 @@ class Modeler_Crudder extends CI_Controller
         $heading = array_keys($this->cmodel->fields);
         if (method_exists($this, '_heading')) {
             $heading = $this->_heading();
+        } else {
+            $heading[] = '';
         }
         $this->table->set_heading($heading);
 
@@ -67,6 +69,12 @@ class Modeler_Crudder extends CI_Controller
                 $line = $result->toArray();
                 if (method_exists($this, '_each')) {
                     $line = $this->_each($line);
+                } else {
+                    $line[] = array(
+                                'class' => 'center actions',
+                                'data' => '<a href="'.$this->base_url.'/edit/'.$line['id'].'" class="button left">edit</a>'
+                                       .  '<a href="'.$this->base_url.'/delete/'.$line['id'].'" class="button right">delete</a>'
+                              );
                 }
                 call_user_func_array(array($this->table, 'add_row'), $line);
             }
