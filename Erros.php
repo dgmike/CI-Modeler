@@ -21,3 +21,12 @@ class ARecord_No_Primary extends Exception
         parent::__construct($message, $code);
     }
 }
+
+class ARecord_No_Values extends Exception
+{
+    public function __construct($field, $code = 1)
+    {
+        $message = 'This field ('.$field.') must have values.';
+        parent::__construct($message, $code);
+    }
+}
