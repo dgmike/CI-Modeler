@@ -10,6 +10,7 @@ class Modeler_Crudder extends CI_Controller
         'row_alt_start' => '<tr class="even">',
     );
     public $query = array();
+    public $addEachEditDeleteActions = false;
 
     public function index($page = 1, $per_page = 10)
     {
@@ -66,9 +67,16 @@ class Modeler_Crudder extends CI_Controller
         //if ($total) {
             // result
             foreach ($result as $item) {
-                $line = $result->toArray();
+                $line = $item = $result->toArray();
                 if (method_exists($this, '_each')) {
                     $line = $this->_each($line);
+                    if ($this->addEachEditDeleteActions) {
+                        $line[] = array(
+                                    'class' => 'center actions',
+                                    'data' => '<a href="'.$this->base_url.'/edit/'.$item['id'].'" class="button left">edit</a>'
+                                           .  '<a href="'.$this->base_url.'/delete/'.$item['id'].'" class="button right">delete</a>'
+                                  );
+                    }
                 } else {
                     $line[] = array(
                                 'class' => 'center actions',
