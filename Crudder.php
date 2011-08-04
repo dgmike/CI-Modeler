@@ -170,6 +170,9 @@ class Modeler_Crudder extends CI_Controller
                     $data = $this->_filter_data($data);
                 }
                 $this->cmodel->update($data, array('id' => $id));
+                if (method_exists($this, '_pos_filter_data')) {
+                    $data = $this->_pos_filter_data($id, $data);
+                }
                 $this->session->set_flashdata('message', array(
                     'type' => 'success', 
                     'text' => 'Dados salvos com sucesso!'
@@ -219,6 +222,9 @@ class Modeler_Crudder extends CI_Controller
                     $data = $this->_filter_data($data);
                 }
                 $id = $this->cmodel->insert($data);
+                if (method_exists($this, '_pos_filter_data')) {
+                    $data = $this->_pos_filter_data($id, $data);
+                }
                 $this->session->set_flashdata('message', array(
                     'type' => 'success', 
                     'text' => 'Dados salvos com sucesso!'
