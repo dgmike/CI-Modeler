@@ -185,7 +185,7 @@ class Modeler_Result implements Iterator, ArrayAccess, Countable
      */
     public function offsetGet($offset)
     {
-        $elm &= $this->_current;
+        $elm = $this->_current;
         if ('array' === gettype($elm)) {
             return (isset($elm[$offset]) ? $elm[$offset] : null);
         } elseif ('object' === gettype($elm)) {
