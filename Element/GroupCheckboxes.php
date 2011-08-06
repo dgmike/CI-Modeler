@@ -14,6 +14,11 @@ class Modeler_Element_GroupCheckboxes implements Modeler_Element
     {
         $element = $formulator->fields[$this->element];
         $values  = $values[$this->element];
+        if ($this->splitter == 'unserialize') {
+            $values = unserialize($values);
+        } elseif ($this->splitter == 'json_decode') {
+            $values = json_decode($values);
+        }
         if (!is_array($values)) {
             $values = explode($this->splitter, $values);
         }
