@@ -189,7 +189,7 @@ class Modeler_Crudder extends CI_Controller
         }
         // $this->db->select('id, nome, login, email');
         $result = $this->cmodel->get($id);
-        $types =array_keys($this->cmodel->forms); 
+        $types = array_keys($this->cmodel->forms); 
         if (in_array('edit', $types)) {
             $form = $result->form(new Modeler_Form('edit'));
         } elseif (in_array('default', $types)) {

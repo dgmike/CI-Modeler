@@ -363,8 +363,6 @@ class Modeler_Formulator
 
     private function _createDateElement($key, $field, $value)
     {
-        $value = str_replace(' ', 'T', $value);
-        $value = preg_replace('@:\d\d$@', '', $value);
         $datetime_element = sprintf('<input type="date" name="%s" value="%s" /> %s', $key, $value, $this->_formatSmall($field) );
         $labeled = $this->_labeler('datetime', $key, $field, $datetime_element);
         return $labeled;
