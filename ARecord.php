@@ -350,10 +350,14 @@ class Modeler_ARecord
     {
         if (!$select) {
             $select = array_keys($this->fields);
+            $select = array_map(create_function('$a', 'return "`'.$this->table.'`.`$a`";'), $select);
         }
-        $this->db->select('SQL_CALC_FOUND_ROWS `' . array_shift($select) . '`')
+        $this->db->select(array_shift($select))
                  ->select($select, false)
                  ->from($this->table);
+
+        $this->db->ar_select[0] = 'SQL_CALC_FOUND_ROWS ' . $this->db->ar_select[0];
+
         if ($filter) {
             $this->db->where($filter);
         }
