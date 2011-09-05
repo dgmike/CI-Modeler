@@ -13,14 +13,14 @@ class Modeler_Element_GroupCheckboxes implements Modeler_Element
     public function render( Modeler_Formulator $formulator, array $values )
     {
         $element = $formulator->fields[$this->element];
-        if (empty($values[$this->element])) {
-            $values[$this->element] = 'a:0:{}';
-        }
         $values  = $values[$this->element];
         if ($this->splitter == 'unserialize') {
             $values = unserialize($values);
         } elseif ($this->splitter == 'json_decode') {
             $values = json_decode($values);
+        }
+        if (empty($values[$this->element])) {
+            $values[$this->element] = array();
         }
         if (!is_array($values)) {
             $values = explode($this->splitter, $values);
