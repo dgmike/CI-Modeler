@@ -9,8 +9,9 @@ class Modeler_Crudder extends CI_Controller
         'row_start'     => '<tr class="odd">',
         'row_alt_start' => '<tr class="even">',
     );
-    public $query = array();
+    public $query                    = array();
     public $addEachEditDeleteActions = false;
+    public $CSRF                     = false;
 
     public function index($page = 1, $per_page = 10)
     {
@@ -155,10 +156,58 @@ class Modeler_Crudder extends CI_Controller
         $this->load->view( 'crud/' . $template, $data);
     }
 
+    private function _create_csrf()
+    {
+        if (!$this->CSRF) {
+            return array('', '');
+        }
+        $CSRF = $this->session->flashdata('CSRF');
+        $new_CSRF = uniqid(rand());
+        $this->session->set_flashdata('CSRF', $new_CSRF);
+        return array($CSRF, $new_CSRF);
+    }
+
+    private function _validate_csrf($CSRF, $back_url)
+    {
+        if (!$this->CSRF) {
+            return true;
+        }
+        if ($this->input->post('CSRF') != $CSRF) {
+            $this->session->set_flashdata('message', array(
+                'type'  => 'error',
+                'title' => 'Ocorreram problemas na requisição. Por favor verifique-os e tente novamente.',
+                'text'  => 'Código de verificação inválido.',
+            ));
+            redirect($back_url, 303);
+            die('');
+        }
+    }
+
+    private function _validate_referer($must_be_referer, $redirect)
+    {
+        $referer = $_SERVER['HTTP_REFERER'];
+        if (strpos($must_be_referer, '//') === false) {
+            $referer = parse_url($referer);
+            $referer = $referer['path'];
+        }
+        if ($referer !== $must_be_referer) {
+            $this->session->set_flashdata('message', array(
+                'type'  => 'error',
+                'title' => 'Ocorreram problemas na requisição. Por favor verifique-os e tente novamente.',
+                'text'  => 'Referer inválido!',
+            ));
+            redirect($redirect, 303);
+            die('');
+        }
+    }
+
     public function edit($id)
     {
+        list($CSRF, $new_CSRF) = $this->_create_csrf();
         $this->load->model($this->model, 'cmodel');
         if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST') {
+            $this->_validate_referer($this->base_url.'/edit/'.$id, $this->base_url . '/');
+            $this->_validate_csrf($CSRF, $this->base_url.'/edit/'.$id);
             if ($this->cmodel->validar()) {
                 foreach (array_keys($this->cmodel->fields) as $item) {
                     if (in_array($item, $this->cmodel->primary) || !isset($_POST[$item])) {
@@ -187,6 +236,7 @@ class Modeler_Crudder extends CI_Controller
             redirect($this->base_url.'/edit/'.$id, 303);
             die;
         }
+        $CSRF = $new_CSRF;
         // $this->db->select('id, nome, login, email');
         $result = $this->cmodel->get($id);
         $types = array_keys($this->cmodel->forms); 
@@ -202,15 +252,18 @@ class Modeler_Crudder extends CI_Controller
         }
         $title = $this->title . ': edit #' . $id;
         $message = $this->session->flashdata('message');
-        $data = compact('form', 'title', 'message', 'edit_actions');
+        $data = compact('form', 'title', 'message', 'edit_actions', 'CSRF');
 
         $this->_render('edit', $data);
     }
 
     public function add()
     {
+        list($CSRF, $new_CSRF) = $this->_create_csrf();
         $this->load->model($this->model, 'cmodel');
         if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST') {
+            $this->_validate_referer($this->base_url.'/add', $this->base_url . '/');
+            $this->_validate_csrf($CSRF, $this->base_url.'/add');
             if ($this->cmodel->validar()) {
                 foreach (array_keys($this->cmodel->fields) as $item) {
                     if (in_array($item, $this->cmodel->primary) || !isset($_POST[$item])) {
@@ -241,6 +294,7 @@ class Modeler_Crudder extends CI_Controller
             redirect($this->base_url.'/add', 303);
             die;
         }
+        $CSRF = $new_CSRF;
         $types = array_keys($this->cmodel->forms); 
         if (in_array('add', $types)) {
             $form = $this->cmodel->form(new Modeler_Form('add'));
@@ -253,14 +307,17 @@ class Modeler_Crudder extends CI_Controller
         }
         $title = $this->title . ': add';
         $message = $this->session->flashdata('message');
-        $data = compact('form', 'title', 'message');
+        $data = compact('form', 'title', 'message', 'CSRF');
         $this->_render('add', $data);
     }
 
     public function delete($id)
     {
+        list($CSRF, $new_CSRF) = $this->_create_csrf();
         $this->load->model($this->model, 'cmodel');
         if (strtoupper($_SERVER['REQUEST_METHOD']) == 'POST') {
+            $this->_validate_referer($this->base_url.'/delete/'.$id, $this->base_url . '/');
+            $this->_validate_csrf($CSRF, $this->base_url.'/');
             $this->cmodel->delete($id);
             $this->session->set_flashdata('message', array(
                 'type' => 'success',
@@ -270,10 +327,10 @@ class Modeler_Crudder extends CI_Controller
             redirect($this->base_url, 303);
             die;
         }
+        $CSRF = $new_CSRF;
         $title = $this->title . ': delete #' . $id;
         $url = $this->base_url . '/';
-        $data = compact('title', 'url');
+        $data = compact('title', 'url', 'CSRF');
         $this->_render('delete', $data);
     }
 }
-
