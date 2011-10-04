@@ -218,10 +218,27 @@ class Modeler_Formulator
      */
     private function _createNumberElement( $key, $field, $value )
     {
-        return sprintf( '<label class="form_number %s%s">' . PHP_EOL
-                      . '%s'
-                      . '  <input type="number" name="%s" value="%s" />' . PHP_EOL
-                      . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
+        $browser  = $_SERVER['HTTP_USER_AGENT'];
+        if (false !== strpos($browser, 'WebKit')) {
+            $type = 'number';
+        } else {
+            $type = 'text';
+        }
+        $template = '<label class="form_number %2$s%4$s">%7$s'
+                  . '%5$s'
+                  . '  <input type="%1$s" name="%2$s" value="%3$s" />%7$s'
+                  . '%6$s</label>%7$s';
+        return vsprintf(
+            $template, array(
+                /* 1 */ $type,
+                /* 2 */ $key, 
+                /* 3 */ $value,
+                /* 4 */ $this->_formatClass( $field ),
+                /* 5 */ $this->_formatLabel( $field ),
+                /* 6 */ $this->_formatSmall($field),
+                /* 7 */ PHP_EOL 
+            )
+        );
     }
 
     /**
