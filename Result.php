@@ -204,6 +204,11 @@ class Modeler_Result implements Iterator, ArrayAccess, Countable
     {
         return $this->_current;
     }
+
+    public function toObject()
+    {
+        return (object) $this->toArray();
+    }
  
     public function form()
     {

@@ -5,8 +5,10 @@ class Modeler_Element_Phone implements Modeler_Element
     public function render(Modeler_Formulator $formulator, array $values)
     {
         $fieldset  = '<fieldset class="telefone"><legend>Telefones</legend>';
-        if (!empty($values['telefone'])) {
-            $fieldset .= $this->renderValues($values['telefone']);
+        foreach (array('telefone', 'telefones') as $item) {
+            if (!empty($values[$item])) {
+                $fieldset .= $this->renderValues($values[$item]);
+            }
         }
         $fieldset .= '<div class="telefone-wrap">';
         $fieldset .= '

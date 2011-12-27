@@ -129,7 +129,7 @@ class Modeler_Formulator
                     $form .= $this->_parseModelerForm($item);
                 }
             } elseif (is_object($item) && $item instanceof Modeler_Element) {
-               $form .= $item->render($this, $this->values);
+                $form .= $item->render($this, $this->values);
             } else {
                 trigger_error('Element \''.(is_string($item) ? $item : get_class($item) . ' (object)').'\' is not a valid element for this form', E_USER_NOTICE);
             }
@@ -225,9 +225,9 @@ class Modeler_Formulator
             $type = 'text';
         }
         $template = '<label class="form_number %2$s%4$s">%7$s'
-                  . '%5$s'
-                  . '  <input type="%1$s" name="%2$s" value="%3$s" />%7$s'
-                  . '%6$s</label>%7$s';
+            . '%5$s'
+            . '  <input type="%1$s" name="%2$s" value="%3$s" />%7$s'
+            . '%6$s</label>%7$s';
         return vsprintf(
             $template, array(
                 /* 1 */ $type,
@@ -269,9 +269,9 @@ class Modeler_Formulator
     private function _createTextareaElement( $key, $field, $value )
     {
         return sprintf( '<label class="form_text %s%s">' . PHP_EOL
-                      . '%s'
-                      . '  <textarea name="%s">%s</textarea>' . PHP_EOL
-                      . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
+            . '%s'
+            . '  <textarea name="%s">%s</textarea>' . PHP_EOL
+            . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
     }
 
     /**
@@ -333,10 +333,10 @@ class Modeler_Formulator
     {
         $options = $this->_parseOptions( $field, $value );
         return sprintf( '<label class="form_text %s%s">' . PHP_EOL
-                      . '%s'
-                      . '  <select name="%s">%s' . PHP_EOL
-                      . '  </select>' . PHP_EOL
-                      . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $options, $this->_formatSmall($field), PHP_EOL );
+            . '%s'
+            . '  <select name="%s">%s' . PHP_EOL
+            . '  </select>' . PHP_EOL
+            . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $options, $this->_formatSmall($field), PHP_EOL );
     }
 
     /**
@@ -354,16 +354,16 @@ class Modeler_Formulator
             $value = '';
         }
         $render = sprintf( '<label class="form_password %s%s">' . PHP_EOL
-                . '%s'
-                . '  <input type="password" name="%s" value="%s" />' . PHP_EOL
-                . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
+            . '%s'
+            . '  <input type="password" name="%s" value="%s" />' . PHP_EOL
+            . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
         if (!empty($field['label2'])) {
             $field['label'] = $field['label2'];
             $field['small'] = empty($field['small2']) ? '' : $field['small2'];
             $render .= sprintf( '<label class="form_password %s2%s">' . PHP_EOL
-                    . '%s'
-                    . '  <input type="password" name="%s2" value="%s" />' . PHP_EOL
-                    . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
+                . '%s'
+                . '  <input type="password" name="%s2" value="%s" />' . PHP_EOL
+                . '%s</label>%s', $key, $this->_formatClass( $field ), $this->_formatLabel( $field ), $key, $value, $this->_formatSmall($field), PHP_EOL );
         }
 
         return $render;

@@ -188,10 +188,15 @@ class Modeler_ARecord
             // @TODO colocar o get em formato de array
             return '@TODO';
         }
-        return new Modeler_Result($this, $this->db
+        if (is_array($keys)) {
+            $this->db->where($keys);
+        } else {
+            $this->db->where(array($this->primary[0] => $keys));
+        }
+        $result = $this->db
              ->from($this->table)
-             ->where(array($this->primary[0] => $keys))
-             ->get() );
+             ->get();
+        return new Modeler_Result($this, $result);
     }
 
     /**

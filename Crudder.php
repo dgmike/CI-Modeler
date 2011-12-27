@@ -1,6 +1,6 @@
 <?php
 
-class Modeler_Crudder extends CI_Controller
+class Modeler_Crudder extends Controller
 {
     public $model        = null;
     public $cmodel       = null;
