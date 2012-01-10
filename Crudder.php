@@ -1,5 +1,7 @@
 <?php
 
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'CI_Controller.php';
+
 class Modeler_Crudder extends Controller
 {
     public $model        = null;
