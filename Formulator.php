@@ -202,7 +202,8 @@ class Modeler_Formulator
      */
     private function _createTextElement( $key, $field, $value )
     {
-        $text_element = sprintf('<input type="text" name="%s" value="%s" /> %s', $key, $value, $this->_formatSmall($field) );
+        $readonly = isset($field['readonly']) ? ' readonly="readonly"' : '';
+        $text_element = sprintf('<input type="text" name="%s" value="%s"%s /> %s', $key, $value, $readonly, $this->_formatSmall($field));
         $labeled = $this->_labeler('text', $key, $field, $text_element);
         return $labeled;
     }
