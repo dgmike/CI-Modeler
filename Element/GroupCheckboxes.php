@@ -22,6 +22,7 @@ class Modeler_Element_GroupCheckboxes implements Modeler_Element
         if (empty($values[$this->element])) {
             $values[$this->element] = array();
         }
+        $small = (empty($element['small']) ? '' : '<p><small>'.$element['small'].'</small></p>');
         if (!is_array($values)) {
             $values = explode($this->splitter, $values);
         }
@@ -42,7 +43,8 @@ class Modeler_Element_GroupCheckboxes implements Modeler_Element
         return sprintf('<fieldset>
             <legend>%s</legend>
             %s
-        </fieldset>', $element['label'], $checkboxes);
+            %s
+        </fieldset>', $element['label'], $small, $checkboxes);
     }
 }
 
