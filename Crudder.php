@@ -27,7 +27,13 @@ class Modeler_Crudder extends Controller
         $this->db->order_by($this->cmodel->primary[0], 'DESC');
 
         // heading
-        $heading = array_keys($this->cmodel->fields);
+        foreach ($this->cmodel->fields as $key => $value) {
+            if (isset($value['label'])) {
+                $heading[] = $value['label'];
+            } else {
+                $heading[] = $key;
+            }
+        }
         if (method_exists($this, '_heading')) {
             $heading = $this->_heading();
         } else {
